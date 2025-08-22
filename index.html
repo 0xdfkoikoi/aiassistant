@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism UI - Dark Mode</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the glassmorphism effect */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05); /* Adjusted for darker background */
+            backdrop-filter: blur(12px); /* The blur effect */
+            -webkit-backdrop-filter: blur(12px); /* For Safari */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Adjusted for contrast */
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Darker shadow */
+        }
+        .placeholder-white::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-black min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-white/90">TOKO GANGAN AI ASSISTANT</h1>
+        </div>
+
+        <div class="space-y-8">
+            <!-- Query Input Box -->
+            <div class="glass-effect rounded-2xl p-6">
+                <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input 
+                        type="text" 
+                        id="queryInput"
+                        placeholder="Ask me anything..." 
+                        class="w-full h-12 px-4 bg-transparent text-white placeholder-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 transition duration-300"
+                    >
+                    <button id="submitButton" class="w-full sm:w-auto h-12 px-8 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition duration-300 flex-shrink-0">
+                        Send
+                    </button>
+                </div>
+            </div>
+
+            <!-- Answer Box -->
+            <div id="answerBox" class="glass-effect rounded-2xl p-6 min-h-[200px]">
+                <p class="text-white/70">Your answer will appear here...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const queryInput = document.getElementById('queryInput');
+        const submitButton = document.getElementById('submitButton');
+        const answerBox = document.getElementById('answerBox');
+
+        async function handleSubmit() {
+            const query = queryInput.value.trim();
+            if (!query) {
+                answerBox.innerHTML = '<p class="text-white/70">Please enter the question first.</p>';
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            answerBox.innerHTML = '<p class="text-white font-semibold animet-pulse">Thinking...</p>';
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({message: query })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    answerBox.innerHTML = `<p class="text-red-300">Error: ${data.error || 'Request failed'}</p>`;
+                } else {
+                    answerBox.innerHTML = '<p class="text-white whitespace-pre-wrap">${data.reply}</p>';
+                }
+            } catch (e) {
+                answerBox.innerHTML = '<p class="text-red-300">Network error: ${e.message}</p>';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-50' , 'cursor-not-allowed');
+                queryInput.value = '';
+                queryInput.focus();
+            }
+        }
+        submitButton.addEventListener('click', handleSubmit);
+        queryInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSubmit(); 
+
+        }
+    );
+    </script>
+
+</body>
+</html>
