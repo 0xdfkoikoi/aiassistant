@@ -3,7 +3,7 @@
 
 const CONFIG = {
     // API Endpoint Configuration
-    WORKER_BASE_URL: 'https://domba.realganganadul.workers.dev',
+    WORKER_BASE_URL: 'here',
     
     // Core Business Identity
     OWNER_NAME: 'Gangan',
