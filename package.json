@@ -1,0 +1,31 @@
+
+{
+  "name": "Gangan-AI-assistant",
+  "version": "1.0.0",
+  "description": "Gingin is Gangan's virtual ai assistant.",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": [
+    "Gangan",
+    "Gingin",
+    "ai",
+    "gemini",
+    "chatbot",
+    "toko",
+    "GINGIN"
+  ],
+  "author": "0xdfkoikoi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xdfkoikoi/aiassistant.git"
+  },
+  "homepage": "https://yourusername.github.io/wisdom-cafe-website/",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
