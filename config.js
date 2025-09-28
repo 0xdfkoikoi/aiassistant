@@ -3,7 +3,7 @@
 
 const CONFIG = {
     // API Endpoint Configuration
-    WORKER_BASE_URL: 'here',
+    WORKER_BASE_URL: 'https://ginginaiassistant.realganganadul.workers.dev',
     
     // Core Business Identity
     OWNER_NAME: 'Gangan',
