@@ -1,108 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glassmorphism UI - Dark Mode</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* Custom styles for the glassmorphism effect */
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05); /* Adjusted for darker background */
-            backdrop-filter: blur(12px); /* The blur effect */
-            -webkit-backdrop-filter: blur(12px); /* For Safari */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Adjusted for contrast */
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Darker shadow */
-        }
-        .placeholder-white::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glassmorphism AI Chat</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      /* Using Inter font as recommended for clean UI */
+      font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      /* Placeholder background image, adjust as needed */
+      background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
+      z-index: 0;
+    }
+    .chat-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 480px;
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(10px) saturate(180%);
+      -webkit-backdrop-filter: blur(10px) saturate(180%);
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      overflow: hidden; /* Ensure content stays within rounded corners */
+    }
+    /* NEW: Header styling for title and icon */
+    .chat-header {
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+    }
+    .chat-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+    #assistant-icon {
+      width: 44px; /* Slightly larger size */
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255, 255, 255, 0.7); /* Thicker, brighter border */
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+      transition: transform 0.3s ease;
+    }
+    #assistant-icon:hover {
+        transform: scale(1.05);
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .chat-message {
+      margin-bottom: 12px;
+      line-height: 1.4;
+      padding: 8px 12px;
+      border-radius: 12px;
+      /* --- START FIX for neatness and markdown support --- */
+      white-space: pre-wrap; /* Preserves whitespace/line breaks from markdown response */
+      word-break: break-word; /* Ensures long words/URLs wrap correctly */
+      text-align: left; /* Ensures text inside the bubble is left-aligned for readability */
+      /* --- END FIX --- */
+    }
+    .chat-message.user {
+      text-align: right; /* Use this only to position the bubble to the right */
+      margin-left: 20%;
+      background: rgba(0, 150, 255, 0.7); /* Blue tint for user */
+    }
+    /* Override text-align to left for user messages' content for neatness */
+    .chat-message.user > * {
+        text-align: left;
+    }
+
+    .chat-message.ai {
+      text-align: left; /* Use this only to position the bubble to the left */
+      margin-right: 20%;
+      background: rgba(255, 255, 255, 0.2); /* Lighter glassmorphism for AI */
+    }
+    .input-area {
+      display: flex;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+    }
+    .input-area input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 1rem;
+      padding: 10px;
+    }
+    .input-area input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .input-area button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 10px 20px;
+      margin-left: 10px;
+      border-radius: 12px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s, transform 0.1s;
+    }
+    .input-area button:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+    .input-area button:active {
+      transform: scale(0.98);
+    }
+    @media (max-width: 400px) {
+      body {
+        padding: 10px;
+      }
+      .chat-container {
+        height: 90vh;
+      }
+      .input-area {
+        flex-direction: column;
+      }
+      .input-area button {
+        margin: 10px 0 0 0;
+        width: 100%;
+      }
+      .chat-message.user, .chat-message.ai {
+        margin-left: 10%;
+        margin-right: 10%;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-black min-h-screen flex items-center justify-center p-4">
-
-    <div class="w-full max-w-2xl mx-auto">
-        
-        <!-- Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-white/90">TOKO GANGAN AI ASSISTANT</h1>
-        </div>
-
-        <div class="space-y-8">
-            <!-- Query Input Box -->
-            <div class="glass-effect rounded-2xl p-6">
-                <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
-                    <input 
-                        type="text" 
-                        id="queryInput"
-                        placeholder="Ask me anything..." 
-                        class="w-full h-12 px-4 bg-transparent text-white placeholder-white border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 transition duration-300"
-                    >
-                    <button id="submitButton" class="w-full sm:w-auto h-12 px-8 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition duration-300 flex-shrink-0">
-                        Send
-                    </button>
-                </div>
-            </div>
-
-            <!-- Answer Box -->
-            <div id="answerBox" class="glass-effect rounded-2xl p-6 min-h-[200px]">
-                <p class="text-white/70">Your answer will appear here...</p>
-            </div>
-        </div>
-
+<body>
+  <div class="overlay"></div>
+  <div class="chat-container">
+    <!-- NEW: Chat Header with Title and Icon -->
+    <div class="chat-header">
+      <h1 class="chat-title">Gangan's AI Assistant</h1>
+      <img
+        id="assistant-icon"
+        src="https://raw.githubusercontent.com/0xdfkoikoi/aiassistant/refs/heads/main/img/3d40e6df5a167e763a170871e526483b.jpg"
+        alt="Assistant Icon"
+      />
     </div>
+    <!-- END NEW: Chat Header -->
+    <div class="chat-box" id="chat-box"></div>
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Type your message in English or Bahasa Indonesia..." />
+      <button id="send-button">Send</button>
+    </div>
+  </div>
 
-    <script>
-        const queryInput = document.getElementById('queryInput');
-        const submitButton = document.getElementById('submitButton');
-        const answerBox = document.getElementById('answerBox');
+  <script src="config.js"></script>
+  <script>
+    // --- START: Multilingual System Prompt Update ---
+    // Default instruction is updated to explicitly support English and Bahasa Indonesia
+    const defaultSystemPrompt = "You are Gingin, Gangan's Ai assistant. Your primary function is to serve as a friendly, helpful, and concise customer support bot. **Always respond in the language of the user's question (English or Bahasa Indonesia)**, maintaining a warm persona.";
+    
+    const systemPrompt = typeof CONFIG !== 'undefined' && CONFIG.SYSTEM_PROMPT
+      ? CONFIG.SYSTEM_PROMPT
+      : defaultSystemPrompt;
+    // --- END: Multilingual System Prompt Update ---
 
-        async function handleSubmit() {
-            const query = queryInput.value.trim();
-            if (!query) {
-                answerBox.innerHTML = '<p class="text-white/70">Please enter the question first.</p>';
-                return;
-            }
+    function addMessage(message, sender, chatBox) {
+      const div = document.createElement("div");
+      div.className = `chat-message ${sender}`;
+      // Use innerHTML to handle potential markdown formatting if the Worker supports it
+      div.innerHTML = message; 
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return div;
+    }
 
-            submitButton.disabled = true;
-            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
-            answerBox.innerHTML = '<p class="text-white font-semibold animet-pulse">Thinking...</p>';
+    document.addEventListener('DOMContentLoaded', () => {
+      const sendButton = document.getElementById("send-button");
+      const userInput = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+      
+      // Updated initial welcome message reflecting multilingual capability
+      addMessage("Hello! I'm Gingin, Gangan's AI assistant How may I help you today?", "ai", chatBox);
 
-            try {
-                const res = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({message: query })
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    answerBox.innerHTML = `<p class="text-red-300">Error: ${data.error || 'Request failed'}</p>`;
-                } else {
-                    answerBox.innerHTML = '<p class="text-white whitespace-pre-wrap">${data.reply}</p>';
-                }
-            } catch (e) {
-                answerBox.innerHTML = '<p class="text-red-300">Network error: ${e.message}</p>';
-            } finally {
-                submitButton.disabled = false;
-                submitButton.classList.remove('opacity-50' , 'cursor-not-allowed');
-                queryInput.value = '';
-                queryInput.focus();
-            }
+      if (sendButton) sendButton.addEventListener('click', sendMessage);
+      if (userInput) {
+        userInput.addEventListener("keypress", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+          }
+        });
+      }
+    });
+
+    async function sendMessage() {
+      const userInput = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+      const userMessage = userInput.value.trim();
+      if (!userMessage) return;
+
+      addMessage(userMessage, "user", chatBox);
+      userInput.value = "";
+      // Loading state message
+      const loadingDiv = addMessage("Gingin sedang berpikir...", "ai", chatBox);
+
+      try {
+        if (typeof CONFIG === 'undefined' || !CONFIG.WORKER_BASE_URL) {
+          throw new Error("Configuration error: WORKER_BASE_URL is not set in config.js.");
         }
-        submitButton.addEventListener('click', handleSubmit);
-        queryInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSubmit(); 
-
-        }
-    );
-    </script>
-
+        
+        // The combined prompt ensures the AI receives the multilingual instruction
+        const prompt = `${systemPrompt}\n\nPertanyaan pelanggan: ${userMessage}`;
+        const res = await fetch(`${CONFIG.WORKER_BASE_URL}/generate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || `API Request failed with status ${res.status}.`);
+        
+        const aiResponse = json.text || "";
+        loadingDiv.innerHTML = aiResponse || "I received a response from the Worker, but it was empty.";
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (error) {
+        console.error('Error calling Worker API:', error);
+        
+        // Fallback hardcoded responses for when the external API fails (kept as is, with minor styli.ng)
+        const responses = {
+          "roko": "Tentu, roko di toko kami tersedia dari djarum, sampoerna, gudang garam, ktandg, dan classmild.",
+          "kopi": "Kopi unggulan kami adalah Domba Arabika, dengan cita rasa unik dan aroma kuat. Kami juga menyediakan Latte, Cappuccino, dan Espresso.",
+          "reservasi": "Untuk reservasi, silakan hubungi kami via WhatsApp di +6283143087159.",
+          "hours": "Kami buka setiap hari dari pukul 09:00 pagi hingga 09:00 malam.",
+          "default": `[API Error: ${error.message}]. Saat ini saya tidak dapat terhubung ke layanan AI. Saya hanya bisa memberikan jawaban dasar.`
+        };
+        
+        const lowerCaseMessage = userMessage.toLowerCase();
+        let fallbackResponse = responses["default"];
+        
+        if (lowerCaseMessage.includes("kopi") || lowerCaseMessage.includes("coffee")) fallbackResponse = responses["kopi"];
+        else if (lowerCaseMessage.includes("reservasi") || lowerCaseMessage.includes("reservation")) fallbackResponse = responses["reservasi"];
+        else if (lowerCaseMessage.includes("jam") || lowerCaseMessage.includes("hours") || lowerCaseMessage.includes("buka")) fallbackResponse = responses["hours"];
+        else if (lowerCaseMessage.includes("roko") || lowerCaseMessage.includes("cigarette")) fallbackResponse = responses["roko"];
+        
+        loadingDiv.innerHTML = `<span style="color: #ffcccc;">[Error] </span> ${fallbackResponse}`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+  </script>
 </body>
 </html>
