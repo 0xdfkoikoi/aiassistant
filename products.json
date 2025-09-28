@@ -1,8 +1,0 @@
-[
-  {"sku":"TG-001","name":"Beras Ramos 5kg","price":72000,"stock":18,"tags":"beras,rice,staple"},
-  {"sku":"TG-002","name":"Minyak Goreng 1L","price":19000,"stock":25,"tags":"oil,cooking"},
-  {"sku":"TG-003","name":"Gula Pasir 1kg","price":16000,"stock":30,"tags":"sugar"},
-  {"sku":"CF-101","name":"Americano (Hot)","price":18000,"stock":50,"tags":"coffee,hot"},
-  {"sku":"CF-102","name":"Cappuccino","price":28000,"stock":20,"tags":"coffee,milk"},
-  {"sku":"BD-201","name":"Kaos Basic L","price":55000,"stock":12,"tags":"shirt,apparel,size L"}
-]
