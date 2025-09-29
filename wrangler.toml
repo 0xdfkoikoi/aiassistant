@@ -5,7 +5,7 @@ compatibility_date = "2025-09-01"
 [vars]
 # No plain-text API keys here. Use `wrangler secret put GEMINI_API_KEY`
 
-name = "wisdom-cafe-worker"
+name = "ginginaiassistant"
 # main = "worker.js" # This line is not needed for static site deployment
 compatibility_date = "2025-09-20"
 
