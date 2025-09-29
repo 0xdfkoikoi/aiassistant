@@ -1,8 +1,5 @@
 {
   "name": "ginginaiassistant",
   "compatibility_date": "2025-09-28",
-  "main": "src/index.js",
-  "assets": {
-    "directory" : "./dist"
-  }
+  "main": "src/index.js"
 }
